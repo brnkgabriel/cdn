@@ -242,14 +242,16 @@ var Featurebox = (function (json) {
   }
 
   class Database {
-    constructor(config) {
-      this.initialize(config)
+    constructor(config, docRef) {
+      this.initialize(config, docRef)
     }
 
-    initialize(config) {
+    initialize(config, docRef) {
       this.app = firebase.initializeApp(config)
       this.firestore = this.app.firestore()
-      this.getDoc(util.COLLECTION, "data")
+
+      const document = docRef ? docRef : "data"
+      this.getDoc(util.COLLECTION, document)
     }
 
     getDoc(collection, docRef) {
