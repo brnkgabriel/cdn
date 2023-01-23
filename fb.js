@@ -1,4 +1,4 @@
-var Featurebox = (function (json) {
+var Featurebox = (function (json, docRef) {
 
   class Util {
     constructor() {
@@ -1599,8 +1599,12 @@ var Featurebox = (function (json) {
   
   var pubsub = new PubSub()
   var util = new Util()
-  var database = new Database(json.config)
-  database.getDoc(util.COLLECTION, "data")
+  var database = new Database(json.config);
+  
+  if (!docRef) {
+    database.getDoc(util.COLLECTION, "data")
+  }
+
   var preProcess = new PreProcess()
 
   pubsub.subscribe(util.DATA_ARRIVES, data => new Controller(data))
