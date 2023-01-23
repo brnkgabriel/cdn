@@ -242,16 +242,13 @@ var Featurebox = (function (json) {
   }
 
   class Database {
-    constructor(config, docRef) {
-      this.initialize(config, docRef)
+    constructor(config) {
+      this.initialize(config)
     }
 
-    initialize(config, docRef) {
-      this.app = firebase.initializeApp(config)
+    initialize(config) {
+      this.app = firebase.initializeApp(config, config.projectId)
       this.firestore = this.app.firestore()
-
-      const document = docRef ? docRef : "data"
-      this.getDoc(util.COLLECTION, document)
     }
 
     getDoc(collection, docRef) {
@@ -1603,6 +1600,7 @@ var Featurebox = (function (json) {
   var pubsub = new PubSub()
   var util = new Util()
   var database = new Database(json.config)
+  database.getDoc(util.COLLECTION, "data")
   var preProcess = new PreProcess()
 
   pubsub.subscribe(util.DATA_ARRIVES, data => new Controller(data))
@@ -1616,6 +1614,7 @@ var Featurebox = (function (json) {
     PRODUCTS_DISPLAYED: util.PRODUCTS_DISPLAYED,
     getDocument: database.getDoc,
     saveDocument: database.setDoc,
+    Database
   }
 })
 
