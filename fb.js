@@ -1,4 +1,4 @@
-var Featurebox = (function (json, docRef) {
+var Featurebox = (function (json) {
 
   class Util {
     constructor() {
@@ -251,9 +251,18 @@ var Featurebox = (function (json, docRef) {
       this.firestore = this.app.firestore()
     }
 
-    getDoc(collection, docRef) {
+    getAll(collection, event) {
+      const documents = {}
+      return this.firestore.collection(collection).get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => documents[doc.id] = doc.data())
+        pubsub.emit(event, documents)
+    });
+    }
+
+    getDoc(collection, docRef, event) {
       return this.firestore.collection(collection).doc(docRef)
-      .get().then(doc => pubsub.emit(util.DATA_ARRIVES, doc.exists ? doc.data() : {}))
+      .get().then(doc => pubsub.emit(event, doc.exists ? doc.data() : {}))
       .catch(err => console.error(err))
     }
 
@@ -1600,10 +1609,7 @@ var Featurebox = (function (json, docRef) {
   var pubsub = new PubSub()
   var util = new Util()
   var database = new Database(json.config);
-  
-  if (!docRef) {
-    database.getDoc(util.COLLECTION, "data")
-  }
+  database.getDoc(util.COLLECTION, "data", util.DATA_ARRIVES)
 
   var preProcess = new PreProcess()
 
@@ -1621,5 +1627,4 @@ var Featurebox = (function (json, docRef) {
     Database
   }
 })
-
 
